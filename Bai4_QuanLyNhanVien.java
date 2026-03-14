@@ -86,7 +86,6 @@ public class Bai4_QuanLyNhanVien {
             dsNV.add(nv);
         }
 
-        // Định nghĩa các đường kẻ bảng
         String divider = "+---------+----------------------+---------------+--------------+---------------+------------+";
         String header  = "| %-7s | %-20s | %13s | %-12s | %13s | %-10s |%n";
 

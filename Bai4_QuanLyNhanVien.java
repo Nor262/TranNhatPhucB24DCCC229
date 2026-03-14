@@ -11,16 +11,10 @@ abstract class NhanVien {
         maNV = sc.nextLine();
         System.out.print("Nhập họ tên: ");
         hoTen = sc.nextLine();
-        System.out.print("Nhập lương cơ bản: ");
-        luongCoBan = Double.parseDouble(sc.nextLine());
     }
 
     public abstract double tinhLuong();
-
-    public void hienThiThongTin() {
-        System.out.printf("| %-10s | %-20s | %15.0f | %15.0f |%n",
-                maNV, hoTen, luongCoBan, tinhLuong());
-    }
+    public abstract void hienThiThongTin();
 }
 
 class NhanVienFullTime extends NhanVien {
@@ -29,6 +23,8 @@ class NhanVienFullTime extends NhanVien {
     @Override
     public void nhapThongTin(Scanner sc) {
         super.nhapThongTin(sc);
+        System.out.print("Nhập lương cơ bản: ");
+        luongCoBan = Double.parseDouble(sc.nextLine());
         System.out.print("Nhập hệ số lương: ");
         heSoLuong = Double.parseDouble(sc.nextLine());
     }
@@ -40,8 +36,9 @@ class NhanVienFullTime extends NhanVien {
 
     @Override
     public void hienThiThongTin() {
-        System.out.printf("| %-10s | %-20s | %15.0f | HS: %-6.1f | %15.0f | %-10s |%n",
-                maNV, hoTen, luongCoBan, heSoLuong, tinhLuong(), "Full-time");
+        String chiTiet = "HS: " + heSoLuong;
+        System.out.printf("| %-7s | %-20s | %13s | %-12s | %13s | %-10s |%n", 
+            maNV, hoTen, String.format("%,.0f", luongCoBan), chiTiet, String.format("%,.0f", tinhLuong()), "Full-time");
     }
 }
 
@@ -65,8 +62,9 @@ class NhanVienPartTime extends NhanVien {
 
     @Override
     public void hienThiThongTin() {
-        System.out.printf("| %-10s | %-20s | %15.0f | %3d giờ×%-5.0f | %15.0f | %-10s |%n",
-                maNV, hoTen, luongCoBan, soGioLam, luongMoiGio, tinhLuong(), "Part-time");
+        String chiTiet = soGioLam + "h x " + String.format("%,.0f", luongMoiGio);
+        System.out.printf("| %-7s | %-20s | %13s | %-12s | %13s | %-10s |%n", 
+            maNV, hoTen, "-", chiTiet, String.format("%,.0f", tinhLuong()), "Part-time");
     }
 }
 
@@ -82,24 +80,30 @@ public class Bai4_QuanLyNhanVien {
             System.out.println("\n--- Nhập thông tin nhân viên thứ " + (i + 1) + " ---");
             System.out.print("Loại nhân viên (1: Full-time, 2: Part-time): ");
             int loai = Integer.parseInt(sc.nextLine());
-
-            NhanVien nv;
-            if (loai == 1) {
-                nv = new NhanVienFullTime();
-            } else {
-                nv = new NhanVienPartTime();
-            }
+            
+            NhanVien nv = (loai == 1) ? new NhanVienFullTime() : new NhanVienPartTime();
             nv.nhapThongTin(sc);
             dsNV.add(nv);
         }
 
-        System.out.println("\n========== DANH SÁCH NHÂN VIÊN ==========");
-        System.out.printf("| %-10s | %-20s | %15s | %-13s | %15s | %-10s |%n",
-                "Mã NV", "Họ tên", "Lương CB", "Chi tiết", "Lương thực", "Loại");
-        System.out.println("|------------|----------------------|-----------------|---------------|-----------------|------------|");
+        // Định nghĩa các đường kẻ bảng
+        String divider = "+---------+----------------------+---------------+--------------+---------------+------------+";
+        String header  = "| %-7s | %-20s | %13s | %-12s | %13s | %-10s |%n";
+
+        System.out.println("\n" + " ".repeat(30) + "DANH SÁCH NHÂN VIÊN");
+        System.out.println(divider);
+        System.out.printf(header, "Mã NV", "Họ tên", "Lương CB", "Chi tiết", "Lương thực", "Loại");
+        System.out.println(divider);
+
+        double tongLuong = 0;
         for (NhanVien nv : dsNV) {
             nv.hienThiThongTin();
+            tongLuong += nv.tinhLuong();
         }
+
+        System.out.println(divider);
+        System.out.printf("| %-61s | %13s |            |%n", "TỔNG LƯƠNG CHI TRẢ", String.format("%,.0f", tongLuong));
+        System.out.println(divider);
 
         sc.close();
     }
